@@ -1,0 +1,10 @@
+#!/bin/sh
+# Runs boxed for a hook of the boxed plugin. A SessionStart hook can start with a PATH that holds nothing useful, so the folder
+# that uv tool and pipx install into is tried too. Without boxed it says nothing and exits 0: a session must not be disturbed.
+if command -v boxed >/dev/null 2>&1; then
+  exec boxed "$@"
+fi
+if [ -x "$HOME/.local/bin/boxed" ]; then
+  exec "$HOME/.local/bin/boxed" "$@"
+fi
+exit 0

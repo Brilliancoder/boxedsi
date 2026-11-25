@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.hypothesis/
+node_modules/
+dist/
+build/
+*.egg-info/
+desktop/src-tauri/target/
+shots/
+.DS_Store
+.env
+.claude/worktrees/
+.claude/settings.local.json

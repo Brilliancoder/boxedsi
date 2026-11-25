@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>boxedsi social preview</title>
+<!-- The social preview of the GitHub repository, 1280x640. Render: node scripts/demo/render-preview.mjs. All numbers are made up. -->
+<style>
+  @font-face { font-family: "IBM Plex Sans"; font-weight: 400; src: url("fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "IBM Plex Sans"; font-weight: 600; src: url("fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 400; src: url("fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url("fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); }
+
+  :root {
+    --paper: #F3EFE6;
+    --paper-light: #FBF9F3;
+    --ink: #141414;
+    --signal: #C8321A;
+    --muted: #6B665C;
+    --rule: rgba(20, 20, 20, 0.22);
+    --sans: "IBM Plex Sans", Arial, sans-serif;
+    --mono: "IBM Plex Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    padding: 64px 72px;
+    display: grid;
+    grid-template-columns: 1fr 432px;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .left { display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
+  .name { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-weight: 500; font-size: 30px; letter-spacing: 0.01em; }
+  .mark { width: 34px; height: 34px; border: 3px solid var(--ink); position: relative; }
+  .mark::after { content: ""; position: absolute; left: 5px; right: 5px; top: 12px; height: 4px; background: var(--signal); }
+  h1 { font-weight: 600; font-size: 80px; line-height: 1.04; letter-spacing: -0.025em; }
+  h1 em { font-style: normal; color: var(--signal); }
+  .sub { font-family: var(--mono); font-size: 21px; color: var(--muted); line-height: 1.5; }
+  .sub b { color: var(--ink); font-weight: 500; }
+
+  .report {
+    background: var(--paper-light);
+    border: 2px solid var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
+    font-family: var(--mono);
+    font-size: 17px;
+    line-height: 1.5;
+  }
+  .report header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 2px solid var(--ink); padding: 12px 20px;
+    font-weight: 500; font-size: 18px;
+  }
+  .report header span { color: var(--muted); font-weight: 400; font-size: 15px; }
+  .report section { padding: 14px 20px; border-bottom: 1px dashed var(--rule); }
+  .report section:last-child { border-bottom: 0; }
+  .row { display: flex; justify-content: space-between; gap: 16px; }
+  .row .n { font-weight: 500; }
+  .big { font-size: 26px; font-weight: 500; color: var(--signal); line-height: 1.25; }
+  .warn { color: var(--signal); font-size: 15px; margin-top: 4px; }
+  .muted { color: var(--muted); }
+  .hash { display: flex; justify-content: space-between; color: var(--ink); }
+  .hash .k { color: var(--muted); }
+  .stamp {
+    display: inline-block; margin-top: 2px; padding: 2px 10px; border: 2px solid var(--signal); color: var(--signal);
+    font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="name"><span class="mark" aria-hidden="true"></span>boxedsi</div>
+    <h1>See what your agents <em>already saw.</em></h1>
+    <p class="sub"><b>$ boxed audit</b><br>secrets and personal data in your<br>Claude Code and Codex transcripts. Local.</p>
+  </div>
+
+  <div class="report" aria-label="example audit report with made-up numbers">
+    <header>boxed audit <span>example</span></header>
+    <section>
+      <div class="row"><span>items checked</span><span class="n">12 480</span></div>
+      <div class="row muted"><span>claude-code / codex</span><span>9 812 / 2 668</span></div>
+    </section>
+    <section>
+      <div class="big">23 unique secrets</div>
+      <div class="row"><span>occurrences</span><span class="n">61</span></div>
+      <div class="warn">If real, rotate the credential.</div>
+    </section>
+    <section>
+      <div class="hash"><span>SECRET #3f9a1c0e72b4</span><span class="k">x9</span></div>
+      <div class="hash"><span>SECRET #b81d47a6e03c</span><span class="k">x7</span></div>
+      <div class="hash"><span>PRIVATE_KEY #0c5e92fd18a7</span><span class="k">x2</span></div>
+      <div class="hash"><span>EMAIL 148 &middot; PHONE 12</span><span class="k">counts</span></div>
+    </section>
+    <section>
+      <span class="stamp">counts and hashes only, never values</span>
+    </section>
+  </div>
+</body>
+</html>

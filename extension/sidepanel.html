@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>boxed.si</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #ffffff;
+      --text: #1a1c20;
+      --muted: #5a616c;
+      --border: #c9ced6;
+      --field: #f6f7f9;
+      --accent: #1f5fd1;
+      --on-accent: #ffffff;
+      --ok: #17713f;
+      --bad: #b3261e;
+      --warn-bg: #fff3dc;
+      --warn-border: #d9a13a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1b1d21;
+        --text: #e7e9ec;
+        --muted: #9ba2ad;
+        --border: #3b4048;
+        --field: #24272c;
+        --accent: #7aa7ff;
+        --on-accent: #10131a;
+        --ok: #5fcb8e;
+        --bad: #ff8a80;
+        --warn-bg: #3a2f18;
+        --warn-border: #a67c22;
+      }
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body {
+      margin: 0;
+      padding: 14px 16px 24px;
+      background: var(--bg);
+      color: var(--text);
+      font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    h1 { margin: 0; font-size: 16px; font-weight: 650; }
+    header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin-bottom: 12px; }
+    .status { margin: 0; color: var(--muted); }
+    .status.ok { color: var(--ok); }
+    .status.bad { color: var(--bad); }
+    label { display: block; margin: 12px 0 4px; font-weight: 600; }
+    textarea, input, select {
+      width: 100%;
+      padding: 7px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--field);
+      color: inherit;
+      font: inherit;
+    }
+    textarea { resize: vertical; }
+    .hint { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+    .row label { margin: 0; }
+    .row select { width: auto; flex: 1 1 140px; }
+    button {
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.primary { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+    button:disabled { opacity: 0.5; cursor: default; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tabs { display: flex; gap: 4px; margin-top: 14px; border-bottom: 1px solid var(--border); }
+    .tabs button { border: 0; border-bottom: 2px solid transparent; border-radius: 0; color: var(--muted); }
+    .tabs button[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--text); }
+    .summary { margin: 8px 0 0; }
+    .problems { margin-top: 10px; padding: 8px 10px; border: 1px solid var(--warn-border); border-radius: 6px; background: var(--warn-bg); }
+    .problems p { margin: 0 0 4px; font-weight: 600; }
+    .problems ul { margin: 0; padding-left: 18px; }
+    .notice { min-height: 1.45em; margin: 14px 0 0; font-weight: 600; }
+    .notice.bad { color: var(--bad); }
+    h2 { margin: 18px 0 0; font-size: 14px; font-weight: 650; }
+    .hint.bad { color: var(--bad); font-weight: 600; }
+    .switch { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .switch input { width: auto; margin: 0; }
+    .switch label { margin: 0; }
+    .list { margin: 8px 0 0; padding: 0; list-style: none; }
+    .list li { padding: 6px 0; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+    .list li .hint { margin: 2px 0 0; }
+    .list li button { margin-top: 6px; }
+    .mark { margin-left: 8px; padding: 0 6px; border: 1px solid var(--warn-border); border-radius: 10px; background: var(--warn-bg); font-size: 12px; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>boxed.si</h1>
+    <p id="status" class="status" role="status">Checking the boxed.si program...</p>
+  </header>
+
+  <label for="scope">Scope</label>
+  <input id="scope" type="text" maxlength="64" spellcheck="false" autocomplete="off">
+  <p class="hint">The same scope gives the same placeholders. Use one scope per chat.</p>
+
+  <div class="tabs" role="tablist" aria-label="Mode">
+    <button id="tab-prepare" type="button" role="tab" aria-selected="true" aria-controls="prepare">Prepare</button>
+    <button id="tab-restore" type="button" role="tab" aria-selected="false" aria-controls="restore" tabindex="-1">Restore</button>
+    <button id="tab-observe" type="button" role="tab" aria-selected="false" aria-controls="observe" tabindex="-1">Observe</button>
+  </div>
+
+  <section id="prepare" role="tabpanel" aria-labelledby="tab-prepare">
+    <label for="input">Text to prepare</label>
+    <textarea id="input" rows="7" spellcheck="false" placeholder="Paste or type what you want to send to an AI chat."></textarea>
+    <div class="row">
+      <label for="level">Level</label>
+      <select id="level">
+        <option value="0">0 - Secrets only</option>
+        <option value="1">1 - Secrets and personal data</option>
+        <option value="2" selected>2 - Plus company data (default)</option>
+      </select>
+      <button id="mask" class="primary" type="button">Mask</button>
+    </div>
+    <label for="masked">Masked text</label>
+    <textarea id="masked" rows="7" readonly></textarea>
+    <p id="summary" class="summary" role="status"></p>
+    <div class="row">
+      <button id="copy-masked" type="button" disabled>Copy</button>
+      <button id="insert" type="button" disabled>Insert into page</button>
+    </div>
+    <p class="hint">Insert only fills the chat box of the open AI tab. You press Send yourself.</p>
+    <p class="hint">Direct identifiers are replaced. Context can still give a person or a company away.</p>
+  </section>
+
+  <section id="restore" role="tabpanel" aria-labelledby="tab-restore" hidden>
+    <label for="answer">Answer from the AI</label>
+    <textarea id="answer" rows="7" spellcheck="false" placeholder="Copy the answer in the chat with its Copy button, then paste it here."></textarea>
+    <div class="row">
+      <button id="run-restore" class="primary" type="button">Restore</button>
+    </div>
+    <div id="problems" class="problems" hidden>
+      <p>Check by hand</p>
+      <ul id="warnings"></ul>
+    </div>
+    <label for="restored">Restored text</label>
+    <textarea id="restored" rows="7" readonly></textarea>
+    <p id="restore-summary" class="summary" role="status"></p>
+    <div class="row">
+      <button id="copy-restored" type="button" disabled>Copy</button>
+    </div>
+    <p class="hint">The restored text stays in this panel. It is never put into the web page.</p>
+  </section>
+
+  <section id="observe" role="tabpanel" aria-labelledby="tab-observe" hidden>
+    <div class="switch">
+      <input id="observe-on" type="checkbox" role="switch">
+      <label for="observe-on">Observe sends</label>
+    </div>
+    <p class="hint">When on, boxed.si checks each message you send from these chats on this computer and keeps only the kinds and counts it finds, never the text. It never blocks or changes a send.</p>
+    <p class="hint">Files you attach are not checked. Off by default.</p>
+    <ul id="observed" class="list" aria-label="Last observed sends"></ul>
+    <p id="observed-empty" class="hint">Nothing observed yet.</p>
+
+    <h2>Training on chats</h2>
+    <p class="hint">Write down what the data controls of each chat say about training on your chats and about memory. Unknown counts as training on your chats.</p>
+    <p id="checks-status" class="hint" role="status" hidden></p>
+    <ul id="checks" class="list"></ul>
+    <p id="checks-note" class="hint"></p>
+    <form id="check-form">
+      <label for="check-provider">Chat</label>
+      <div class="row">
+        <select id="check-provider"></select>
+        <button id="check-open" type="button" hidden>Open setting</button>
+      </div>
+      <label for="check-account">Account</label>
+      <input id="check-account" type="text" value="personal" maxlength="64" spellcheck="false" autocomplete="off">
+      <p class="hint">A short name for the account, for example personal or you@example.com.</p>
+      <div class="row">
+        <label for="check-training">Training on your chats</label>
+        <select id="check-training">
+          <option value="unknown" selected>Unknown</option>
+          <option value="on">On</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+      <div class="row">
+        <label for="check-memory">Memory</label>
+        <select id="check-memory">
+          <option value="unknown" selected>Unknown</option>
+          <option value="on">On</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+      <div class="row">
+        <button id="check-save" class="primary" type="submit">Save</button>
+      </div>
+      <p class="hint">Open setting shows the data controls of the chat, where the program knows the page. Read the two switches there and write down what you saw. boxed.si does not read the page.</p>
+    </form>
+  </section>
+
+  <p id="notice" class="notice" role="status"></p>
+
+  <script src="lib/protocol.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>boxed.si</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>boxed.si</h1>
+        <p id="engine" role="status">Starting the masking engine...</p>
+      </header>
+
+      <div class="field-head">
+        <label for="text">Text</label>
+        <span id="mode"></span>
+      </div>
+      <textarea id="text" rows="14" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Type or paste the text to mask. After you send it, paste the answer here to restore it."></textarea>
+
+      <div class="controls">
+        <label for="scope">Scope</label>
+        <input id="scope" list="scopes" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="made by the first Mask" />
+        <datalist id="scopes"></datalist>
+        <button id="new-scope" type="button">New scope</button>
+      </div>
+      <p class="help">Masks with the same scope share their placeholders, so an answer can be restored whichever of them it follows. Pick an earlier scope to restore an older answer.</p>
+
+      <div class="controls">
+        <label for="level">Level</label>
+        <select id="level"></select>
+        <button id="mask" type="button">Mask</button>
+        <button id="restore" type="button">Restore</button>
+      </div>
+      <p id="level-help" class="help"></p>
+
+      <p id="status" role="status"></p>
+      <button id="retry" type="button" hidden>Try again</button>
+      <div id="notes"></div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

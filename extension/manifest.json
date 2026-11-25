@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "boxed.si",
+  "version": "0.1.0",
+  "description": "Mask secrets and personal data on this computer before a prompt reaches an AI chat, and restore the answer.",
+  "homepage_url": "https://boxed.si",
+  "minimum_chrome_version": "116",
+  "icons": { "16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png", "128": "icons/icon-128.png" },
+  "permissions": ["sidePanel", "nativeMessaging", "scripting", "webRequest", "storage"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://chat.deepseek.com/*",
+    "https://chat.z.ai/*"
+  ],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "action": {
+    "default_title": "boxed.si",
+    "default_icon": { "16": "icons/icon-16.png", "32": "icons/icon-32.png", "48": "icons/icon-48.png", "128": "icons/icon-128.png" }
+  },
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'self'" }
+}

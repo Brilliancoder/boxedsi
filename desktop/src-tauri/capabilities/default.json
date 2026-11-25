@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "The main window may send requests to the boxed sidecar through the app's own sidecar_request command, and may do nothing else: no fs, shell, http, updater or other plugin permission, no core permission.",
+  "windows": ["main"],
+  "permissions": ["allow-sidecar-request"]
+}

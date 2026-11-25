@@ -1,0 +1,70 @@
+name: Detector report
+description: A detector missed something it should find, or masked something it should leave alone.
+labels: ["detector"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## **DO NOT PASTE REAL SECRETS OR PERSONAL DATA**
+        **Give an invented example of the same shape, never the real value - not even part of it.** Same length, same separators, same words around it, with the characters replaced. If you cannot make a safe example, describe the shape in words.
+        If you pasted a real value by mistake, revoke it now and edit this issue.
+        If the problem lets someone bypass masking on purpose, report it privately instead: see [SECURITY.md](https://github.com/boxedsi/boxedsi/security/policy).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What went wrong
+      options:
+        - Missed (a value was not masked)
+        - False positive (something harmless was masked)
+        - Wrong kind or wrong span (masked, but not as it should be)
+    validations:
+      required: true
+  - type: input
+    id: detector
+    attributes:
+      label: Kind of value
+      description: For example SECRET, EMAIL, PHONE, IBAN, INN, PERSON, ORG, DATE, MONEY, or "API key of service X".
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Invented example
+      description: The made-up text that shows the problem, with the surrounding line or two. Mark what should or should not have been masked.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What boxed printed
+      description: The output of `boxed mask` on the example above.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: level
+    attributes:
+      label: Level and name models
+      description: For example "level 2, ner = [ru]". The level is `--level N` or `level` in boxed.toml.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: boxed version
+      description: Output of `boxed --version`.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Where such text comes from
+      description: Optional. The service, file format or tool that produces this shape, and a link to its public documentation.
+  - type: checkboxes
+    id: safe
+    attributes:
+      label: Check
+      options:
+        - label: The example above is invented. It contains no real secret, personal data, company data or machine path.
+          required: true

@@ -1,0 +1,17 @@
+{
+  "description": "boxed: at the start of a session, say which agent extensions are new or changed since boxed skills scan, and which dangerous ones are still installed",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-boxed\" hook skills-check",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

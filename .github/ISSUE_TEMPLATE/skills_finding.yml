@@ -1,0 +1,87 @@
+name: Skills scan finding
+description: boxed skills scan flagged a harmless skill, plugin, MCP server or hook, or missed a harmful one.
+labels: ["skills"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## **DO NOT PASTE REAL SECRETS, AND DO NOT POST WORKING MALWARE**
+        **Reduce the item to the few invented lines that trigger (or should trigger) the rule.** Replace keys, tokens, hostnames, user names and paths with made-up values. The evidence boxed prints has secrets replaced, but check it before you paste it.
+        **Never paste a working malicious sample**, a live download address of a payload or a link to a malicious skill that is still online. Describe the technique in words and give a harmless stand-in (for example `https://example.net/payload`).
+        If you found a malicious item that other people can install, report it to the place that hosts it first. If a technique makes `boxed skills scan` rate a dangerous item `ok` on purpose, report it privately: see [SECURITY.md](https://github.com/boxedsi/boxedsi/security/policy).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What went wrong
+      options:
+        - False alarm (a harmless item was flagged)
+        - Missed (a harmful pattern got no finding, or a verdict that is too low)
+        - Wrong rule, severity or line (flagged, but not as it should be)
+    validations:
+      required: true
+  - type: dropdown
+    id: item
+    attributes:
+      label: Kind of item
+      options:
+        - Skill
+        - Plugin
+        - MCP server
+        - Hook
+        - Agent settings
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: agent
+    attributes:
+      label: Agent
+      description: For example Claude Code, Codex, Cursor, Gemini CLI, Claude Desktop or OpenClaw.
+    validations:
+      required: true
+  - type: input
+    id: rule
+    attributes:
+      label: Rule and verdict
+      description: For a false alarm, the rule name, severity and verdict boxed printed, for example "high pipe-to-shell, suspicious". For a miss, what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Invented example
+      description: The smallest made-up file content that shows the problem (a few lines of SKILL.md, a hook command, an MCP entry). Name the file it lives in.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What boxed printed
+      description: The finding from `boxed skills scan <folder>` run on the invented example above, with paths shortened.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it is wrong
+      description: Why the item is harmless (what the honest tool does with it), or what the harmful pattern does.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: boxed version
+      description: Output of `boxed --version`.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safe
+    attributes:
+      label: Check
+      options:
+        - label: The example above is invented. It contains no real secret, personal data, company data or machine path.
+          required: true
+        - label: It is not a working malicious sample and links to no live payload.
+          required: true

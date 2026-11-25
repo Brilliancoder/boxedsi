@@ -1,0 +1,10 @@
+{
+  "bundle": {
+    "externalBin": ["binaries/boxed"],
+    "macOS": {
+      "files": {
+        "Frameworks": "binaries/_internal"
+      }
+    }
+  }
+}

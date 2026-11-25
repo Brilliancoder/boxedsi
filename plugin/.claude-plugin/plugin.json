@@ -1,0 +1,12 @@
+{
+  "name": "boxed",
+  "description": "boxed.si: masked read and search of logs and files for Claude Code, plus rules for working in masked workspaces",
+  "version": "0.1.0",
+  "author": {
+    "name": "boxed.si authors"
+  },
+  "homepage": "https://boxed.si",
+  "repository": "https://github.com/boxedsi/boxedsi",
+  "license": "Apache-2.0",
+  "keywords": ["privacy", "masking", "secrets", "pii"]
+}

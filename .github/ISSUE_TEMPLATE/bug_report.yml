@@ -1,0 +1,65 @@
+name: Bug report
+description: Something in boxed does not work as the docs say.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not paste real secrets or personal data** - not in the text boxes, not in logs, not in screenshots. Use invented values of the same shape.
+        A security problem (masking that can be bypassed, a value that leaks) goes to [SECURITY.md](https://github.com/boxedsi/boxedsi/security/policy), not here.
+        A detector that misses a value or masks too much: use the "Detector report" form.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected and what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The shortest commands that show it, with invented data. Reproduce it in a throwaway home, set up as in https://github.com/boxedsi/boxedsi/blob/main/docs/guide/install.md#try-it-without-touching-your-own-data (a new HOME, BOXED_HOME inside it, BOXED_KEYSTORE=insecure-file, cd into it).
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: boxed version
+      description: Output of `boxed --version`.
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: channel
+    attributes:
+      label: Where it happens
+      options:
+        - CLI
+        - Claude Code plugin or masked workspace
+        - Codex or MCP server
+        - boxed skills
+        - boxed ask
+        - Files and tables
+        - Browser extension (experimental)
+        - Desktop app (experimental)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Output or error text
+      description: "Reproduce the error with invented data. Before you post, read the command and its output for scope names, file names, paths and values: an error can name a scope or a file you gave."
+      render: text

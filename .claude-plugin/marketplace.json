@@ -1,0 +1,24 @@
+{
+  "name": "boxed",
+  "owner": {
+    "name": "boxed.si authors"
+  },
+  "metadata": {
+    "description": "boxed.si plugins for Claude Code",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "boxed",
+      "source": "./plugin",
+      "description": "Masked read and search of logs and files, plus rules for masked workspaces",
+      "version": "0.1.0",
+      "author": {
+        "name": "boxed.si authors"
+      },
+      "homepage": "https://boxed.si",
+      "repository": "https://github.com/boxedsi/boxedsi",
+      "license": "Apache-2.0"
+    }
+  ]
+}

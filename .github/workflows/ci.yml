@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  # release.yml runs these same checks before it builds anything.
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          # Windows: the core passes, about a hundred tests of the newer parts (serve, skills) do not yet.
+          # Until those known failures are fixed, the whole Windows job is optional, including the core tests: a new failure
+          # there does not fail the run either. The core tests on Windows become required once the known failures are fixed.
+          - os: windows-latest
+            experimental: true
+    continue-on-error: ${{ matrix.experimental == true }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      # Tests of timing budgets flake on shared runners without it.
+      BOXED_TEST_TIME_FACTOR: 3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+      # The ner-en extra is left out on purpose: it pulls torch and a model of about 1 GB.
+      - run: uv sync --frozen --extra ner-ru --extra formats
+      - run: uv run --no-sync pytest -p no:cacheprovider -o addopts="" -q
+
+  # The first run of a stranger: the built wheel in a clean environment, no settings, a made-up home folder.
+  smoke:
+    name: First run (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+      - name: Build the wheel
+        run: uv build --wheel --out-dir "$RUNNER_TEMP/dist"
+      - name: Install it into a clean environment
+        run: |
+          uv venv --python 3.13 "$RUNNER_TEMP/venv"
+          uv pip install --python "$RUNNER_TEMP/venv" "$RUNNER_TEMP"/dist/*.whl
+      - name: Run boxed in a made-up home
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/smoke"
+          # Git Bash on Windows: a path with a drive letter (D:\...) would break the colon-separated PATH.
+          if [ "$RUNNER_OS" = "Windows" ]; then bin="$(cygpath -u "$RUNNER_TEMP")/venv/Scripts"; else bin="$RUNNER_TEMP/venv/bin"; fi
+          export PATH="$bin:$PATH"
+          # Python reads USERPROFILE for ~ on Windows, HOME elsewhere: both point at the made-up home, and the boxed
+          # folder is inside it, as boxed requires on Windows.
+          home="$out/home"
+          mkdir -p "$home"
+          export HOME="$home" USERPROFILE="$home" BOXED_HOME="$home/.boxed"
+          python scripts/demo/make_home.py "$HOME"
+          python scripts/demo/make_home.py --values > "$out/values.txt"
+          [ -s "$out/values.txt" ]
+          # macOS and Windows: the keys go to a file (the keychain of a macOS runner is locked and a request to it never
+          # returns). Linux: no keyring on the runner, so audit uses a random key for the run and says "no keychain".
+          if [ "$RUNNER_OS" != "Linux" ]; then export BOXED_KEYSTORE=insecure-file; fi
+
+          boxed --version
+
+          # pipefail: an incomplete audit (exit 3) fails the step, as the made-up home must be read in full.
+          boxed audit 2> "$out/audit.err" | tee "$out/audit.txt"
+          cat "$out/audit.err" >&2
+          grep -Eq "^boxed audit: [0-9]+ items checked" "$out/audit.txt"
+          grep -Eq "^secrets: [0-9]+ unique \([0-9]+ known key formats, [0-9]+ possible\), [0-9]+ occurrences" "$out/audit.txt"
+          # A key that cannot be made (a boxed folder outside the profile, say) falls back to a random one: catch it.
+          if grep -q "cannot be used" "$out/audit.err"; then echo "audit could not use its key"; exit 1; fi
+          if [ "$RUNNER_OS" != "Linux" ] && grep -q "prefixes are random" "$out/audit.err"; then echo "audit did not use the file key store"; exit 1; fi
+          # The report shows kinds and hashes, never a value: compare it with every made-up value. Print no value.
+          if grep -qF -f "$out/values.txt" "$out/audit.txt"; then echo "a made-up value is in the audit report"; exit 1; fi
+
+          # A scan of a folder saves nothing, so it needs no keychain: exit 0 on every runner.
+          boxed skills scan "$HOME/samples/release-notes" | tee "$out/skills.txt"
+          grep -q "1 item checked: 0 dangerous, 0 suspicious, 1 ok" "$out/skills.txt"
+
+  extension:
+    name: Extension tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      # From inside the folder: Node 22 does not take a folder as an argument of --test.
+      - run: node --test
+        working-directory: extension
+
+  # The desktop shell: JavaScript and Rust tests. macOS only, Linux is not verified for the desktop app yet.
+  desktop:
+    name: Desktop tests (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          workspaces: desktop/src-tauri
+      - run: npm ci && npm test
+        working-directory: desktop
+      - run: cargo test --locked
+        working-directory: desktop/src-tauri

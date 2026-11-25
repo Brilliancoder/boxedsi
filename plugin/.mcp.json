@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "boxed": {
+      "command": "boxed",
+      "args": ["mcp"]
+    }
+  }
+}
